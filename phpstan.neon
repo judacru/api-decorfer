@@ -1,0 +1,11 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    tmpDir: .phpstan-cache
+    paths:
+        - app/
+        - tests/
+    level: 8
+    parallel:
+        processTimeout: 1000.0
