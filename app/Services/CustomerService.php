@@ -16,18 +16,15 @@ use Exception;
 class CustomerService
 {
     public const CUSTOMER_KEY = 'messages.Customer';
-
     public const ERROR_CUSTOMER = 'messages.An error occurred while getting the customer';
-
     public const ERROR_REGISTERING_CUSTOMER = 'messages.There is a customer registered with this name';
-
     public const ERROR_UPDATING_CUSTOMER = 'messages.An error occurred while updating the customer';
-
-    public const ERROR_CREATING_CUSTOMER = 'messages.An error occurred while creating the customer';
 
     /**
      * Registra un cliente en la base de datos
      *
+     * @param Transform $data
+     * @return Transform
      * @throws Exception
      */
     public function create(Transform $data): Transform
@@ -46,26 +43,31 @@ class CustomerService
     /**
      * Actualiza un cliente en la base de datos
      *
+     * @param Transform $data
+     * @return Transform
      * @throws Exception
      */
-    public function update(Transform $transform): Transform
+    public function update(Transform $data): Transform
     {
-        $result = Model::find($transform->getId());
+        $result = Model::find($data->getId());
         if (is_null($result)) {
             throw new Exception(__(self::ERROR_UPDATING_CUSTOMER));
         }
 
-        if ($result->email === $transform->getEmail() && $result->id !== $transform->getId()) {
+        if ($result->email === $data->getEmail() && $result->id !== $data->getId()) {
             throw new Exception(__(self::ERROR_REGISTERING_CUSTOMER));
         }
 
-        $result->update($transform->toUpdate());
+        $result->update($data->toUpdate());
 
-        return $transform;
+        return $data;
     }
 
     /**
      * Verifica si un cliente ya existe en la base de datos
+     *
+     * @param string $email
+     * @return bool
      */
     private function exists(string $email): bool
     {
@@ -74,6 +76,9 @@ class CustomerService
 
     /**
      * Obtiene un cliente por su id
+     *
+     * @param int $id
+     * @return Transform|null
      */
     public function findById(int $id): ?Transform
     {
@@ -108,6 +113,9 @@ class CustomerService
 
     /**
      * inactiva un cliente
+     *
+     * @param int $id
+     * @return void
      */
     public function inactivate(int $id): void
     {
@@ -117,6 +125,11 @@ class CustomerService
         }
     }
 
+    /**
+     * Transforma un modelo a un DTO
+     * @param Model $model
+     * @return Transform
+     */
     private function transform(Model $model): Transform
     {
         $self = new Transform();

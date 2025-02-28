@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTO\Product as Transform;
 use App\Http\Requests\ProductRequest as Request;
 use App\Services\ProductService;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request as HttpRequest;
@@ -23,19 +24,31 @@ use Judacru\Start\Controllers\RestController;
 class ProductController extends RestController
 {
     private ProductService $productService;
+    private UserService $userService;
 
-    public function __construct(ProductService $productService)
+    /**
+     * @param ProductService $productService
+     * @param UserService $userService
+     */
+    public function __construct(ProductService $productService, UserService $userService)
     {
         $this->productService = $productService;
+        $this->userService = $userService;
     }
 
     /**
      * Registra un producto en el sistema
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function create(Request $request): JsonResponse
     {
         try {
+            $person = $this->userService->getCurrent();
             $transform = Transform::fromRequest($request->validated());
+            $transform->setPerson($person);
+
             $result = $this->productService->create($transform);
 
             return $this->created([
@@ -50,11 +63,16 @@ class ProductController extends RestController
 
     /**
      * Registra un producto en el sistema
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         try {
+            $person = $this->userService->getCurrent();
             $transform = Transform::fromRequest($request->validated());
+            $transform->setPerson($person);
             $transform->setId($id);
 
             $this->productService->update($transform);
@@ -69,6 +87,8 @@ class ProductController extends RestController
 
     /**
      * Obtiene todos los productos registrados en el sistema
+     *
+     * @return JsonResponse
      */
     public function findAll(HttpRequest $request): JsonResponse
     {
@@ -88,11 +108,14 @@ class ProductController extends RestController
 
     /**
      * Obtiene el detalle de un producto registrado en el sistema
+     *
+     * @param int|string $id
+     * @return JsonResponse
      */
     public function detail(int|string $id): JsonResponse
     {
         try {
-            if (! is_numeric($id) || empty($id)) {
+            if (!is_numeric($id) || empty($id)) {
                 throw new Exception(__(ProductService::ERROR_PRODUCT));
             }
 
@@ -111,11 +134,14 @@ class ProductController extends RestController
 
     /**
      * Inactiva un producto
+     *
+     * @param int|string $id
+     * @return JsonResponse
      */
     public function inactivate(int|string $id): JsonResponse
     {
         try {
-            if (! is_numeric($id) || empty($id)) {
+            if (!is_numeric($id) || empty($id)) {
                 throw new Exception(__(ProductService::ERROR_PRODUCT));
             }
 

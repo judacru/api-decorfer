@@ -30,6 +30,9 @@ class UserController extends RestController
 
     /**
      * Registra un usuario en el sistema
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function create(Request $request): JsonResponse
     {
@@ -49,6 +52,9 @@ class UserController extends RestController
 
     /**
      * Registra un usuario en el sistema
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
@@ -68,6 +74,8 @@ class UserController extends RestController
 
     /**
      * Obtiene todos los usuarios registradas en el sistema
+     *
+     * @return JsonResponse
      */
     public function findAll(): JsonResponse
     {
@@ -86,24 +94,26 @@ class UserController extends RestController
 
     /**
      * Obtiene el detalle del usuario conectado
+     *
+     * @return JsonResponse
      */
-    /* public function getUserMe(): JsonResponse
+    public function getUserMe(): JsonResponse
     {
         try {
             $result = $this->userService->getUserMe();
-            if (is_null($result)) {
-                throw new Exception(__(UserService::ERROR_USER));
-            }
 
-            return $this->ok($result);
+            return $this->ok($result->toArray());
         } catch (Exception $e) {
             Log::error($e);
             return $this->error($e->getMessage());
         }
-    } */
+    }
 
     /**
      * Obtiene el detalle de un usuario registrada en el sistema
+     *
+     * @param int|string $id
+     * @return JsonResponse
      */
     public function detail(int|string $id): JsonResponse
     {

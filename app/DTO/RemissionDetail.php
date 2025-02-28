@@ -2,8 +2,12 @@
 
 namespace App\DTO;
 
+use App\DTO\Common\Person;
+
 class RemissionDetail extends Registry
 {
+    use Person;
+
     /**
      * @var string|null
      */
@@ -202,7 +206,7 @@ class RemissionDetail extends Registry
             'reference' => $this->getReference(),
             'colors' => $this->getColors(),
             'minimum' => $this->isMinimum(),
-            'createdby' => 1,
+            'createdby' => $this->getPerson(),
         ];
     }
 
@@ -233,6 +237,7 @@ class RemissionDetail extends Registry
         $product->setId($request['product']);
 
         $self = new self();
+        $self->setId($request['id'] ?? null);
         $self->setTotal($request['total']);
         $self->setPackages($request['packages']);
         $self->setPrice($request['price']);
@@ -241,6 +246,7 @@ class RemissionDetail extends Registry
         $self->setColors($request['colors']);
         $self->setMinimum($request['minimum']);
         $self->setProduct($product);
+        $self->setPerson($request['person']);
 
         return $self;
     }

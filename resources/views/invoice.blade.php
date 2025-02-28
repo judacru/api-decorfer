@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura</title>
     <style>
-        body { font-family: Arial, sans-serif; }
+        body { font-family: Arial, sans-serif; font-size: 12px; margin: 5px;  }
         .container { width: 100%; margin: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
         .header {text-align: center; margin-bottom: 10px; height: 80px;}
         .header h2 { margin: 5px 0; }

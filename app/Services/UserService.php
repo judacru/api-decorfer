@@ -19,17 +19,11 @@ use Illuminate\Support\Facades\Hash;
 class UserService
 {
     public const DEFAULT_USER = 'judacru';
-
     public const USER_KEY = 'messages.User';
-
     public const ERROR_USER = 'messages.An error occurred while getting the user';
-
     public const ERROR_REGISTERING_USER = 'messages.There is a user registered with this name';
-
     public const ERROR_UPDATING_USER = 'messages.An error occurred while updating the user';
-
     public const ERROR_CREATING_USER = 'messages.An error occurred while creating the user';
-
     public const ERROR_NOT_ALLOWED = 'messages.You cannont have privileges to realize this action';
 
     private RoleService $roleService;
@@ -98,7 +92,7 @@ class UserService
     public function findById(int $id): ?Transform
     {
         $result = Model::find($id);
-        if (! is_null($result)) {
+        if (!is_null($result)) {
             return $this->transform($result);
         }
 
@@ -123,7 +117,7 @@ class UserService
         foreach ($rows as $row) {
             $self = $this->transform($row);
 
-            if (! is_null($row->role)) {
+            if (!is_null($row->role)) {
                 $role = new Role();
                 $role->setId($row->role->id);
                 $role->setName($row->role->name);
@@ -131,7 +125,7 @@ class UserService
                 $self->setRole($role);
             }
 
-            if (! is_null($row->customer)) {
+            if (!is_null($row->customer)) {
                 $customer = new Customer();
                 $customer->setId($row->customer->id);
                 $customer->setName($row->customer->name);
@@ -153,6 +147,37 @@ class UserService
     /**
      * Obtiene la cuenta de usuario autenticada
      *
+     * @return Transform
+     * @throws Exception
+     */
+    public function getUserMe(): Transform
+    {
+        $user = Auth::user();
+        if (is_null($user)) {
+            throw new Exception(__(self::ERROR_USER));
+        }
+
+        $role = new Role();
+        $role->setId($user['idrole']);
+        $role->setName($user['role']['name']);
+        $role->setDescription($user['role']['description']);
+
+        $self = new Transform();
+        $self->setId($user['id']);
+        $self->setName($user['name']);
+        $self->setEmail($user['email']);
+        $self->setUser($user['user']);
+        $self->setActive($user['active']);
+        $self->setSystem($user['system']);
+        $self->setRole($role);
+
+        return $self;
+    }
+
+    /**
+     * Obtiene la cuenta de usuario autenticada
+     *
+     * @return int
      * @throws Exception
      */
     public function getCurrent(): int
@@ -162,9 +187,14 @@ class UserService
             throw new Exception(__(self::ERROR_USER));
         }
 
-        return intval($user->id);
+        return $user->id;
     }
 
+    /**
+     * Transforma un modelo a un DTO
+     * @param Model $model
+     * @return Transform
+     */
     private function transform(Model $model): Transform
     {
         $role = new Role();
@@ -197,7 +227,7 @@ class UserService
 
         $password = Hash::make(config('USER_PASSWORD', 'password'));
         $user = $this->exists(self::DEFAULT_USER);
-        if (! $user) {
+        if (!$user) {
             Model::create([
                 'id' => null,
                 'name' => config('NAME', ''),

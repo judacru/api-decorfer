@@ -2,8 +2,12 @@
 
 namespace App\DTO;
 
+use App\DTO\Common\Person;
+
 class Remission extends Registry
 {
+    use Person;
+
     /**
      * @var string
      */
@@ -131,7 +135,20 @@ class Remission extends Registry
             'total' => $this->getTotal(),
             'totalpackages' => $this->getTotalPackages(),
             'idcustomer' => $this->getCustomer()->getId(),
-            'createdby' => 1,
+            'createdby' => $this->getPerson(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toUpdate(): array
+    {
+        return [
+            'total' => $this->getTotal(),
+            'totalpackages' => $this->getTotalPackages(),
+            'idcustomer' => $this->getCustomer()->getId(),
+            'updatedby' => $this->getPerson(),
         ];
     }
 

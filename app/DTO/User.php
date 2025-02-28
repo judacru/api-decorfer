@@ -2,8 +2,12 @@
 
 namespace App\DTO;
 
+use App\DTO\Common\Person;
+
 class User extends Registry
 {
+    use Person;
+
     /**
      * @var string
      */
@@ -201,6 +205,7 @@ class User extends Registry
             'system' => false,
             'idrole' => $this->getRole()->getId(),
             'idcustomer' => ! is_null($this->getCustomer()) ? $this->getCustomer()->getId() : null,
+            'createdby' => $this->getPerson(),
         ];
     }
 
@@ -216,6 +221,7 @@ class User extends Registry
             'active' => $this->getActive(),
             'idrole' => $this->getRole()->getId(),
             'idcustomer' => ! is_null($this->getCustomer()) ? $this->getCustomer()->getId() : null,
+            'updatedby' => $this->getPerson(),
         ];
     }
 
@@ -250,6 +256,7 @@ class User extends Registry
         $self->setPassword($request['password']);
         $self->setActive($request['active']);
         $self->setRole($role);
+        $self->setPerson($request['person']);
 
         if (isset($request['customer'])) {
             $customer = new Customer();

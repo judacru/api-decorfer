@@ -2,8 +2,12 @@
 
 namespace App\DTO;
 
+use App\DTO\Common\Person;
+
 class Product extends Registry
 {
+    use Person;
+
     /**
      * @var string
      */
@@ -109,7 +113,7 @@ class Product extends Registry
             'description' => $this->getDescription(),
             'price' => $this->getPrice(),
             'active' => true,
-            'createdby' => 1,
+            'createdby' => $this->getPerson(),
         ];
     }
 
@@ -121,7 +125,8 @@ class Product extends Registry
         return [
             'name' => $this->getName(),
             'description' => $this->getDescription(),
-            'price' => $this->getPrice()
+            'price' => $this->getPrice(),
+            'updatedby' => $this->getPerson(),
         ];
     }
 

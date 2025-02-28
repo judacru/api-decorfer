@@ -22,14 +22,15 @@ class RemissionService
 {
     public const REMISSION_KEY = 'messages.Remission';
     public const PDF_NAME = 'Factura.pdf';
-
     public const ERROR_REMISSION = 'messages.An error occurred while getting the remission';
-
     public const ERROR_CREATING_REMISSION = 'messages.An error occurred while creating the remission';
+    public const ERROR_UPDATING_REMISSION = 'messages.An error occurred while updating the remission';
 
     /**
      * Registra un remision en la base de datos
      *
+     * @param Transform $data
+     * @return Transform
      * @throws Exception
      */
     public function create(Transform $data): Transform
@@ -37,6 +38,8 @@ class RemissionService
         $result = Model::create($data->toCreate());
 
         foreach ($data->getDetails() as $row) {
+            $row->setPerson($data->getPerson());
+
             ModelDetail::create($row->toCreate($result->id));
         }
         $data->setId($result->id);
@@ -45,12 +48,48 @@ class RemissionService
     }
 
     /**
+     * Actualiza una factura en la base de datos
+     *
+     * @param Transform $data
+     * @return Transform
+     * @throws Exception
+     */
+    public function update(Transform $data): Transform
+    {
+        $result = Model::find($data->getId());
+        if (is_null($result)) {
+            throw new Exception(__(self::ERROR_UPDATING_REMISSION));
+        }
+
+        $result->update($data->toUpdate());
+
+        $ids = [];
+        foreach ($data->getDetails() as $row) {
+            if (is_null($row->getId())) {
+                $row->setPerson($data->getPerson());
+
+                $detail = ModelDetail::create($row->toCreate($result->id));
+                $ids[] = $detail->id;
+            } else {
+                $ids[] = $row->getId();
+            }
+        }
+
+        ModelDetail::whereNotIn('id', $ids)->delete();
+
+        return $data;
+    }
+
+    /**
      * Obtiene un remision por su id
+     *
+     * @param int $id
+     * @return Transform|null
      */
     public function findById(int $id): ?Transform
     {
         $result = Model::find($id);
-        if (! is_null($result)) {
+        if (!is_null($result)) {
             $self = $this->transform($result);
             $self->setDetails(...$this->findDetails($id));
 
@@ -62,11 +101,14 @@ class RemissionService
 
     /**
      * Obtiene el ultimo consecutivo y le suma 1
+     *
+     * @return string
+     * @throws Exception
      */
     public function consecutive(): string
     {
         $result = Model::orderBy('consecutive', 'desc')->first();
-        if (! is_null($result)) {
+        if (!is_null($result)) {
             $last = $result->consecutive;
             $new = intval($last) + 1;
 
@@ -97,7 +139,7 @@ class RemissionService
     /**
      * Obtiene todos las remisiones registradas en el sistema
      *
-     * @param int  $id
+     * @param int $id
      * @return array<RemissionDetail>
      */
     private function findDetails(int $id): array
@@ -125,7 +167,8 @@ class RemissionService
         $result = $this->findById($id);
         if (is_null($result)) {
             throw new Exception(__(RemissionService::ERROR_REMISSION));
-        };
+        }
+        ;
 
         $remission = $result->toArray();
         $special = $remission['customer']['special'];
@@ -140,6 +183,11 @@ class RemissionService
         return $pdf;
     }
 
+    /**
+     * Transforma un modelo a un DTO
+     * @param Model $model
+     * @return Transform
+     */
     private function transform(Model $model): Transform
     {
         $customer = new Customer();

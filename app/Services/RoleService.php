@@ -16,17 +16,16 @@ use Illuminate\Support\Facades\Auth;
 class RoleService
 {
     public const DEFAULT_ROLE = 'Administrador';
-
     public const CUSTOMER_ROLE = 'Cliente';
-
     public const ROLE_KEY = 'messages.Role';
-
     public const ERROR_ROLE = 'messages.An error occurred while getting the role';
-
     public const ERROR_ROLE_NOT_ALLOWED = 'messages.You cannont have privileges to realize this action';
 
     /**
      * Verifica si el role ya existe en el sistema
+     *
+     * @param string $name
+     * @return bool
      */
     private function exists(string $name): bool
     {
@@ -35,6 +34,9 @@ class RoleService
 
     /**
      * Verifica si el role ya existe en el sistema
+     *
+     * @param string $name
+     * @return Transform|null
      */
     public function findByName(string $name): ?Transform
     {
@@ -49,6 +51,8 @@ class RoleService
 
     /**
      * Obtiene el perfil del usuario autenticado
+     *
+     * @return Transform|null
      */
     public function getCurrent(): ?Transform
     {
@@ -66,7 +70,7 @@ class RoleService
      *
      * @return array<Transform>
      */
-    public function findAll(bool $active): array
+    public function findAll(): array
     {
         $rows = Model::orderBy('name', 'asc')
             ->get();
@@ -79,6 +83,11 @@ class RoleService
         return $results;
     }
 
+    /**
+     * Transforma un modelo a un DTO
+     * @param Model $model
+     * @return Transform
+     */
     private function transform(Model $model): Transform
     {
         $self = new Transform();

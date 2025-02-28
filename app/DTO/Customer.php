@@ -2,8 +2,12 @@
 
 namespace App\DTO;
 
+use App\DTO\Common\Person;
+
 class Customer extends Registry
 {
+    use Person;
+
     /**
      * @var string
      */
@@ -225,7 +229,7 @@ class Customer extends Registry
             'minimunvalue' => $this->getMinimunValue(),
             'active' => true,
             'special' => $this->isSpecial(),
-            'createdby' => 1,
+            'createdby' => $this->getPerson(),
         ];
     }
 
@@ -243,6 +247,7 @@ class Customer extends Registry
             'identification' => $this->getIdentification(),
             'special' => $this->isSpecial(),
             'minimunvalue' => $this->getMinimunValue(),
+            'updatedby' => $this->getPerson(),
         ];
     }
 

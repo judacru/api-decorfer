@@ -19,6 +19,7 @@ Route::controller(UserController::class)
     ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/', 'findAll');
+        Route::get('/me', 'getUserMe');
         Route::get('/{id}', 'detail');
         Route::post('/', 'create');
         Route::put('/{id}', 'update');
@@ -26,15 +27,10 @@ Route::controller(UserController::class)
 
 Route::controller(ProductController::class)
     ->prefix('products')
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/', 'findAll');
         Route::get('/{id}', 'detail');
-    });
-
-Route::controller(ProductController::class)
-    ->prefix('products')
-    ->middleware(['auth:sanctum'])
-    ->group(function () {
         Route::post('/', 'create');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'inactivate');
@@ -63,12 +59,3 @@ Route::controller(RemissionController::class)
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'inactivate');
     });
-
-Route::get('/test-email', function () {
-    Mail::raw('Este es un correo de prueba desde Laravel con Hostinger.', function ($message) {
-        $message->to('destinatario@example.com')
-                ->subject('Prueba de correo');
-    });
-
-    return 'Correo enviado';
-});

@@ -6,6 +6,7 @@ use App\DTO\Remission as Transform;
 use App\Http\Requests\RemissionRequest as Request;
 use App\Services\ProductService;
 use App\Services\RemissionService;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -24,10 +25,16 @@ use Symfony\Component\HttpFoundation\Response;
 class RemissionController extends RestController
 {
     private RemissionService $remissionService;
+    private UserService $userService;
 
-    public function __construct(RemissionService $remissionService)
+    /**
+     * @param RemissionService $remissionService
+     * @param UserService $userService
+     */
+    public function __construct(RemissionService $remissionService, UserService $userService)
     {
         $this->remissionService = $remissionService;
+        $this->userService = $userService;
     }
 
     /**
@@ -38,7 +45,10 @@ class RemissionController extends RestController
     public function create(Request $request): JsonResponse|Response
     {
         try {
+            $person = $this->userService->getCurrent();
             $transform = Transform::fromRequest($request->validated());
+            $transform->setPerson($person);
+
             $result = $this->remissionService->create($transform);
 
             if (is_null($result->getId())) {
@@ -61,25 +71,32 @@ class RemissionController extends RestController
 
     /**
      * Registra un producto en el sistema
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    /*  public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
         try {
+            $person = $this->userService->getCurrent();
             $transform = Transform::fromRequest($request->validated());
+            $transform->setPerson($person);
             $transform->setId($id);
 
             $this->remissionService->update($transform);
 
-            return $this->message(strval(__('messages.The product has been updated')));
+            return $this->message(strval(__('messages.The invoice has been updated')));
         } catch (Exception $e) {
             Log::error($e);
 
             return $this->error($e->getMessage());
         }
-    } */
+    }
 
     /**
      * Obtiene todos las facturas registradas en el sistema
+     *
+     * @return JsonResponse
      */
     public function findAll(): JsonResponse
     {
@@ -98,6 +115,9 @@ class RemissionController extends RestController
 
     /**
      * Obtiene el detalle de un producto registrado en el sistema
+     *
+     * @param int|string $id
+     * @return JsonResponse
      */
     public function detail(int|string $id): JsonResponse
     {
@@ -108,7 +128,7 @@ class RemissionController extends RestController
 
             $result = $this->remissionService->findById(intval($id));
             if (is_null($result)) {
-                throw new Exception(__(ProductService::ERROR_PRODUCT));
+                throw new Exception(__(RemissionService::ERROR_REMISSION));
             }
 
             return $this->ok($result->toArray());
@@ -134,10 +154,22 @@ class RemissionController extends RestController
             $pdf = $this->remissionService->generatePDF(intval($id));
 
             $name = RemissionService::PDF_NAME;
-            Log::info(storage_path('app'));
             $path = storage_path("app/{$name}");
             $pdf->save($path);
 
+            /* $emailContent = View::make('email')->render();
+
+            $customerEmail = 'ferchohc37@hotmail.com';
+
+            Mail::send([], [], function (Message $message) use ($customerEmail, $emailContent, $path, $name) {
+                $message->to($customerEmail)
+                        ->subject('Factura de Remisión')
+                        ->html($emailContent)
+                        ->attach($path, [
+                            'as' => $name,
+                            'mime' => 'application/pdf',
+                        ]);
+            }); */
             return $pdf->stream($name);
         } catch (Exception $e) {
             Log::error($e);
@@ -147,6 +179,8 @@ class RemissionController extends RestController
 
     /**
      * Obtiene el detalle de un producto registrado en el sistema
+     *
+     * @return JsonResponse
      */
     public function consecutive(): JsonResponse
     {
@@ -160,24 +194,4 @@ class RemissionController extends RestController
             return $this->error($e->getMessage());
         }
     }
-
-    /**
-     * Inactiva un producto
-     */
-    /*  public function inactivate(int|string $id): JsonResponse
-    {
-        try {
-            if (! is_numeric($id) || empty($id)) {
-                throw new Exception(__(ProductService::ERROR_PRODUCT));
-            }
-
-            $this->remissionService->inactivate(intval($id));
-
-            return $this->message(strval(__('messages.The product has been inactivated')));
-        } catch (Exception $e) {
-            Log::error($e);
-
-            return $this->error($e->getMessage());
-        }
-    } */
 }
