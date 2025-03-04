@@ -198,7 +198,6 @@ class RemissionService
         $customer->setPhone($model['customer']['phone']);
         $customer->setCellPhone($model['customer']['cellphone']);
         $customer->setAddress($model['customer']['address']);
-        $customer->setMinimunValue($model['customer']['minimunvalue']);
         $customer->setSpecial($model['customer']['special']);
 
         $self = new Transform();
@@ -212,11 +211,20 @@ class RemissionService
         return $self;
     }
 
+    /**
+     * Transforma un modelo a un DTO
+     * @param ModelDetail $model
+     * @return RemissionDetail
+     */
     private function transformDetails(ModelDetail $model): RemissionDetail
     {
         $product = new Product();
         $product->setId($model['idproduct']);
         $product->setName($model['product']['name']);
+        $product->setDescription($model['product']['description']);
+        $product->setPrice($model['product']['price']);
+        $product->setMinimunValue($model['product']['minimunvalue']);
+        $product->setActive($model['product']['active']);
 
         $self = new RemissionDetail();
         $self->setId($model['id']);

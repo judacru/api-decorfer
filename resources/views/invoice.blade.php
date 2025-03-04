@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; margin: 5px;  }
+        body { font-family: Arial, sans-serif; font-size: 12px; margin: 5px; margin-top: -30px;  }
         .container { width: 100%; margin: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
         .header {text-align: center; margin-bottom: 10px; height: 80px;}
         .header h2 { margin: 5px 0; }
         .header p {margin: 2px 0; font-size: 14px; }
         .table { width: 100%; border-collapse: collapse; height: 200px; }
         .table, .table th, .table td { border: 1px solid black; text-align: center; padding: 8px; }
-        .total { text-align: right; }
+        .total { justify-content: space-between }
         .parent-table { margin-bottom: 0; }
     </style>
 </head>
@@ -66,7 +66,7 @@
                             @endif
                         </tr>
                         <tr>
-                            <td><strong>Fecha:</strong></td>
+                            <td><strong>Fecha y hora:</strong></td>
                             <td>{{ $remission['createdAt'] }}</td>
                         </tr>
                     </table>
@@ -99,10 +99,14 @@
             </tbody>
         </table>
         
-        <div>
-            <p class="total"><strong>TOTAL:</strong> {{ number_format($remission['total'], 2) }}</p>
-            <p><strong>CANTIDAD DE PAQUETES:</strong> {{ $remission['totalpackages'] }}</p>
-        </div>
+        <table width="100%">
+            <tr>
+                <td style="text-align: left;"><strong>FIRMA:__________________________</td>
+                <td style="text-align: left;"><strong>CANTIDAD DE PAQUETES:</strong> {{ $remission['totalpackages'] }}</td>
+                <td style="text-align: right;"><strong>TOTAL:</strong> {{ number_format($remission['total'], 2) }}</td>
+            </tr>
+        </table>
+        
     </div>
 </body>
 </html>

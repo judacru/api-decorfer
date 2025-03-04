@@ -226,13 +226,12 @@ class UserService
         }
 
         $password = Hash::make(config('USER_PASSWORD', 'password'));
-        $user = $this->exists(self::DEFAULT_USER);
-        if (!$user) {
+        if (!$this->exists(self::DEFAULT_USER)) {
             Model::create([
                 'id' => null,
-                'name' => config('NAME', ''),
-                'user' => config('NICK', ''),
-                'email' => config('EMAIL', ''),
+                'name' => env('NAME', ''),
+                'user' => env('NICK', ''),
+                'email' => env('EMAIL', ''),
                 'password' => $password,
                 'idrole' => $role->getId(),
                 'active' => true,

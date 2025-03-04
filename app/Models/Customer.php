@@ -22,7 +22,6 @@ class Customer extends Model
         'cellphone',
         'address',
         'identification',
-        'minimunvalue',
         'active',
         'special',
         'createdby',

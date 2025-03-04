@@ -37,7 +37,9 @@ class UserController extends RestController
     public function create(Request $request): JsonResponse
     {
         try {
+            $person = $this->userService->getCurrent();
             $transform = Transform::fromRequest($request->validated());
+            $transform->setPerson($person);
             $result = $this->userService->create($transform);
 
             return $this->created([
@@ -45,7 +47,6 @@ class UserController extends RestController
             ], strval(__('messages.The user has been created')));
         } catch (Exception $e) {
             Log::error($e);
-
             return $this->error($e->getMessage());
         }
     }
@@ -59,7 +60,9 @@ class UserController extends RestController
     public function update(Request $request, int $id): JsonResponse
     {
         try {
+            $person = $this->userService->getCurrent();
             $transform = Transform::fromRequest($request->validated());
+            $transform->setPerson($person);
             $transform->setId($id);
 
             $this->userService->update($transform);

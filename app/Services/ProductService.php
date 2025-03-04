@@ -144,6 +144,7 @@ class ProductService
         $self->setActive($model['active']);
         $self->setDescription($model['description']);
         $self->setPrice($model['price']);
+        $self->setMinimunValue($model['minimunvalue']);
 
         return $self;
     }

@@ -48,11 +48,6 @@ class Customer extends Registry
      */
     private bool $special;
 
-    /**
-     * @var float
-     */
-    private float $minimunValue;
-
     public function __construct()
     {
         parent::__construct();
@@ -197,23 +192,6 @@ class Customer extends Registry
     }
 
     /**
-     * @return float
-     */
-    public function getMinimunValue(): float
-    {
-        return $this->minimunValue;
-    }
-
-    /**
-     * @param float $minimunValue
-     * @return void
-     */
-    public function setMinimunValue(float $minimunValue): void
-    {
-        $this->minimunValue = $minimunValue;
-    }
-
-    /**
      * @return array<string, mixed>
      */
     public function toCreate(): array
@@ -226,7 +204,6 @@ class Customer extends Registry
             'cellphone' => $this->getCellPhone(),
             'address' => $this->getAddress(),
             'identification' => $this->getIdentification(),
-            'minimunvalue' => $this->getMinimunValue(),
             'active' => true,
             'special' => $this->isSpecial(),
             'createdby' => $this->getPerson(),
@@ -246,7 +223,6 @@ class Customer extends Registry
             'address' => $this->getAddress(),
             'identification' => $this->getIdentification(),
             'special' => $this->isSpecial(),
-            'minimunvalue' => $this->getMinimunValue(),
             'updatedby' => $this->getPerson(),
         ];
     }
@@ -265,7 +241,6 @@ class Customer extends Registry
             'identification' => $this->getIdentification(),
             'active' => $this->isActive(),
             'special' => $this->isSpecial(),
-            'minimunvalue' => $this->getMinimunValue(),
             ...parent::toArray(),
         ];
     }
@@ -282,8 +257,7 @@ class Customer extends Registry
         $self->setPhone($request['phone']);
         $self->setCellPhone($request['cellphone']);
         $self->setAddress($request['address']);
-        $self->setMinimunValue($request['minimunvalue']);
-        $self->setSpecial($request['special']);
+        $self->setSpecial($request['special'] ?? false);
 
         return $self;
     }

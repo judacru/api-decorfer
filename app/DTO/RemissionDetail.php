@@ -216,7 +216,7 @@ class RemissionDetail extends Registry
     public function toArray(): array
     {
         return [
-            'product' => $this->getProduct()->toSelect()->toArray(),
+            'product' => $this->getProduct()->toArray(),
             'total' => $this->getTotal(),
             'packages' => $this->getPackages(),
             'price' => $this->getPrice(),
@@ -246,7 +246,6 @@ class RemissionDetail extends Registry
         $self->setColors($request['colors']);
         $self->setMinimum($request['minimum']);
         $self->setProduct($product);
-        $self->setPerson($request['person']);
 
         return $self;
     }

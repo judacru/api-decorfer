@@ -142,7 +142,6 @@ class CustomerService
         $self->setAddress($model['address']);
         $self->setActive($model['active']);
         $self->setSpecial($model['special']);
-        $self->setMinimunValue($model['minimunvalue']);
 
         return $self;
     }

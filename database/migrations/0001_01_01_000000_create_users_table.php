@@ -42,7 +42,6 @@ return new class () extends Migration {
             $table->boolean('active')->default(true);
             $table->boolean('special')->default(false);
             $table->string('identification');
-            $table->integer('minimunvalue');
             $table->unsignedBigInteger('createdby');
             $table->unsignedBigInteger('updatedby')->nullable();
             $table->timestamp('createdat')->useCurrent();
@@ -62,12 +61,28 @@ return new class () extends Migration {
             $table->string('description')->nullable();
             $table->float('price');
             $table->boolean('active')->default(true);
+            $table->float('minimunvalue');
             $table->unsignedBigInteger('createdby');
             $table->unsignedBigInteger('updatedby')->nullable();
             $table->timestamp('createdat')->useCurrent();
             $table->timestamp('updatedat')->useCurrent()->useCurrentOnUpdate();
             $table->foreign('createdby')->references('id')->on('users');
             $table->foreign('updatedby')->references('id')->on('users');
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
         });
     }
 
@@ -80,5 +95,7 @@ return new class () extends Migration {
         Schema::dropIfExists('users');
         Schema::dropIfExists('customers');
         Schema::dropIfExists('roles');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
     }
 };

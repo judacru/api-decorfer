@@ -256,7 +256,6 @@ class User extends Registry
         $self->setPassword($request['password']);
         $self->setActive($request['active']);
         $self->setRole($role);
-        $self->setPerson($request['person']);
 
         if (isset($request['customer'])) {
             $customer = new Customer();

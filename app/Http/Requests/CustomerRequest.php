@@ -30,8 +30,7 @@ class CustomerRequest extends FormRequest
             'address' => 'required|string',
             'identification' => 'required|string',
             'email' => 'required|string',
-            'special' => 'required|bool',
-            'minimunvalue' => 'required|numeric',
+            'special' => 'nullable|bool',
         ];
     }
 
