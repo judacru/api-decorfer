@@ -48,11 +48,17 @@ class Customer extends Registry
      */
     private bool $special;
 
+    /**
+     * @var array<Product>
+     */
+    private array $products;
+
     public function __construct()
     {
         parent::__construct();
         $this->special = false;
         $this->active = true;
+        $this->products = [];
     }
 
     /**
@@ -192,6 +198,23 @@ class Customer extends Registry
     }
 
     /**
+     * @return array<Product>
+     */
+    public function getProducts(): array
+    {
+        return $this->products;
+    }
+
+    /**
+     * @param Product[] ...$products
+     * @return void
+     */
+    public function setProducts(Product ...$products): void
+    {
+        $this->products = $products;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toCreate(): array
@@ -241,6 +264,9 @@ class Customer extends Registry
             'identification' => $this->getIdentification(),
             'active' => $this->isActive(),
             'special' => $this->isSpecial(),
+            'products' => array_map(function ($row) {
+                return $row->toArray();
+            }, $this->getProducts()),
             ...parent::toArray(),
         ];
     }
@@ -258,6 +284,14 @@ class Customer extends Registry
         $self->setCellPhone($request['cellphone']);
         $self->setAddress($request['address']);
         $self->setSpecial($request['special'] ?? false);
+        $self->setProducts(
+            ...array_map(function ($row) {
+                $product = new Product();
+                $product->setId($row['id']);
+                $product->setPrice($row['price']);
+                return $product;
+            }, $request['products'])
+        );
 
         return $self;
     }

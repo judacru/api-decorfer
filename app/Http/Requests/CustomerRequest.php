@@ -31,6 +31,7 @@ class CustomerRequest extends FormRequest
             'identification' => 'required|string',
             'email' => 'required|string',
             'special' => 'nullable|bool',
+            'products' => 'required|array',
         ];
     }
 

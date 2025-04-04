@@ -48,10 +48,16 @@ class RemissionDetail extends Registry
      */
     private bool $minimum;
 
+    /**
+     * @var int|null
+     */
+    private ?int $return;
+
     public function __construct()
     {
         parent::__construct();
         $this->reference = null;
+        $this->return = null;
     }
 
     /**
@@ -191,6 +197,23 @@ class RemissionDetail extends Registry
     }
 
     /**
+     * @return int|null
+     */
+    public function getReturn(): ?int
+    {
+        return $this->return;
+    }
+
+    /**
+     * @param int|null $return
+     * @return void
+     */
+    public function setReturn(?int $return): void
+    {
+        $this->return = $return;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toCreate(int $remission): array
@@ -206,6 +229,7 @@ class RemissionDetail extends Registry
             'reference' => $this->getReference(),
             'colors' => $this->getColors(),
             'minimum' => $this->isMinimum(),
+            'return' => $this->getReturn(),
             'createdby' => $this->getPerson(),
         ];
     }
@@ -224,6 +248,7 @@ class RemissionDetail extends Registry
             'reference' => $this->getReference(),
             'colors' => $this->getColors(),
             'minimum' => $this->isMinimum(),
+            'return' => $this->getReturn(),
             ...parent::toArray(),
         ];
     }
@@ -245,6 +270,7 @@ class RemissionDetail extends Registry
         $self->setReference($request['reference']);
         $self->setColors($request['colors']);
         $self->setMinimum($request['minimum']);
+        $self->setReturn($request['return']);
         $self->setProduct($product);
 
         return $self;

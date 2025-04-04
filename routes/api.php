@@ -31,6 +31,7 @@ Route::controller(ProductController::class)
     ->group(function () {
         Route::get('/', 'findAll');
         Route::get('/{id}', 'detail');
+        Route::get('/customer/{id}', 'findAllByCustomer');
         Route::post('/', 'create');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'inactivate');

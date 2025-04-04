@@ -107,6 +107,31 @@ class ProductController extends RestController
     }
 
     /**
+     * Obtiene todos los productos asociados al cliente
+     *
+     * @param int|string $id
+     * @return JsonResponse
+     */
+    public function findAllByCustomer(int|string $id): JsonResponse
+    {
+        try {
+            if (!is_numeric($id) || empty($id)) {
+                throw new Exception(__(ProductService::ERROR_PRODUCT));
+            }
+
+            $result = $this->productService->findByCustomer(intval($id), true);
+
+            return $this->ok(array_map(function ($row) {
+                return $row->toArray();
+            }, $result));
+        } catch (Exception $e) {
+            Log::error($e);
+
+            return $this->error($e->getMessage());
+        }
+    }
+
+    /**
      * Obtiene el detalle de un producto registrado en el sistema
      *
      * @param int|string $id

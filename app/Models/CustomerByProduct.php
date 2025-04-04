@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class CustomerByProduct extends Model
 {
     public const CREATED_AT = 'createdat';
 
     public const UPDATED_AT = 'updatedat';
+
+    protected $table = 'customerxproduct';
 
     /**
      * The attributes that are mass assignable.
@@ -16,10 +18,9 @@ class Product extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'description',
+        'idcustomer',
+        'idproduct',
         'price',
-        'active',
         'createdby',
         'updatedby',
         'createdat',

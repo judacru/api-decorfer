@@ -79,9 +79,10 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>CANTIDAD</th>
+                    <th>CANT.</th>
                     <th>DESCRIPCIÓN</th>
                     <th>N° COLORES</th>
+                    <th>DEVOL.</th>
                     <th>PRECIO</th>
                     <th>TOTAL</th>
                 </tr>
@@ -92,6 +93,7 @@
                     <td>{{ $detail['quantity'] }}</td>
                     <td>{{ $detail['product']['name'] }} ({{ $detail['reference'] }})</td>
                     <td>{{ $detail['colors'] }}</td>
+                    <td>{{ $detail['return'] }}</td>
                     <td>{{ number_format($detail['price'], 2) }}</td>
                     <td>{{ number_format($detail['total'], 2) }}</td>
                 </tr>

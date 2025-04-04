@@ -28,11 +28,6 @@ class Product extends Registry
      */
     private bool $active;
 
-    /**
-     * @var float
-     */
-    private float $minimunValue;
-
     public function __construct()
     {
         parent::__construct();
@@ -108,23 +103,6 @@ class Product extends Registry
     }
 
     /**
-     * @return float
-     */
-    public function getMinimunValue(): float
-    {
-        return $this->minimunValue;
-    }
-
-    /**
-     * @param float $minimunValue
-     * @return void
-     */
-    public function setMinimunValue(float $minimunValue): void
-    {
-        $this->minimunValue = $minimunValue;
-    }
-
-    /**
      * @return array<string, mixed>
      */
     public function toCreate(): array
@@ -135,7 +113,6 @@ class Product extends Registry
             'description' => $this->getDescription(),
             'price' => $this->getPrice(),
             'active' => true,
-            'minimunvalue' => $this->getMinimunValue(),
             'createdby' => $this->getPerson(),
         ];
     }
@@ -149,7 +126,6 @@ class Product extends Registry
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             'price' => $this->getPrice(),
-            'minimunvalue' => $this->getMinimunValue(),
             'updatedby' => $this->getPerson(),
         ];
     }
@@ -176,7 +152,6 @@ class Product extends Registry
             'description' => $this->getDescription(),
             'price' => $this->getPrice(),
             'active' => $this->getActive(),
-            'minimunvalue' => $this->getMinimunValue(),
             ...parent::toArray(),
         ];
     }
@@ -190,7 +165,6 @@ class Product extends Registry
         $self->setName($request['name']);
         $self->setDescription($request['description'] ?? null);
         $self->setPrice($request['price']);
-        $self->setMinimunValue($request['minimunvalue']);
         return $self;
     }
 }

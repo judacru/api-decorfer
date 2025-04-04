@@ -132,6 +132,34 @@ class ProductService
     }
 
     /**
+     * Obtiene todos los productos asociados al cliente
+     *
+     * @param int $id
+     * @param bool|null $active
+     * @return array<Transform>
+     */
+    public function findByCustomer(int $id, ?bool $active = null): array
+    {
+        $rows = Model::select('products.*', 'customerxproduct.price')
+            ->join('customerxproduct', 'products.id', 'customerxproduct.idproduct')
+            ->where('customerxproduct.idcustomer', $id)
+            ->when(!is_null($active), function ($query) use ($active) {
+                return $query->where('active', $active);
+            })
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $results = [];
+        foreach ($rows as $row) {
+            $self = $this->transform($row);
+
+            $results[] = $self;
+        }
+
+        return $results;
+    }
+
+    /**
      * Transforma un modelo a un DTO
      * @param Model $model
      * @return Transform
@@ -144,7 +172,6 @@ class ProductService
         $self->setActive($model['active']);
         $self->setDescription($model['description']);
         $self->setPrice($model['price']);
-        $self->setMinimunValue($model['minimunvalue']);
 
         return $self;
     }

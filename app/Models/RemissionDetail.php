@@ -28,6 +28,7 @@ class RemissionDetail extends Model
         'total',
         'colors',
         'minimum',
+        'return',
         'createdby',
         'updatedby',
         'createdat',

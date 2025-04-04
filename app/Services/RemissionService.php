@@ -10,6 +10,7 @@ use App\Models\Remission as Model;
 use App\Models\RemissionDetail as ModelDetail;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Servicio que maneja todos los usuarios en el sistema
@@ -35,16 +36,28 @@ class RemissionService
      */
     public function create(Transform $data): Transform
     {
-        $result = Model::create($data->toCreate());
+        try {
+            DB::beginTransaction();
 
-        foreach ($data->getDetails() as $row) {
-            $row->setPerson($data->getPerson());
+            if ($this->exists($data->getConsecutive())) {
+                throw new Exception(__(self::ERROR_CREATING_REMISSION));
+            }
 
-            ModelDetail::create($row->toCreate($result->id));
+            $result = Model::create($data->toCreate());
+
+            foreach ($data->getDetails() as $row) {
+                $row->setPerson($data->getPerson());
+
+                ModelDetail::create($row->toCreate($result->id));
+            }
+            $data->setId($result->id);
+
+            DB::commit();
+            return $data;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-        $data->setId($result->id);
-
-        return $data;
     }
 
     /**
@@ -56,28 +69,38 @@ class RemissionService
      */
     public function update(Transform $data): Transform
     {
-        $result = Model::find($data->getId());
-        if (is_null($result)) {
-            throw new Exception(__(self::ERROR_UPDATING_REMISSION));
-        }
+        try {
+            DB::beginTransaction();
 
-        $result->update($data->toUpdate());
-
-        $ids = [];
-        foreach ($data->getDetails() as $row) {
-            if (is_null($row->getId())) {
-                $row->setPerson($data->getPerson());
-
-                $detail = ModelDetail::create($row->toCreate($result->id));
-                $ids[] = $detail->id;
-            } else {
-                $ids[] = $row->getId();
+            $result = Model::find($data->getId());
+            if (is_null($result)) {
+                throw new Exception(__(self::ERROR_UPDATING_REMISSION));
             }
+
+            $result->update($data->toUpdate());
+
+            $ids = [];
+            foreach ($data->getDetails() as $row) {
+                if (is_null($row->getId())) {
+                    $row->setPerson($data->getPerson());
+
+                    $detail = ModelDetail::create($row->toCreate($result->id));
+                    $ids[] = $detail->id;
+                } else {
+                    $ids[] = $row->getId();
+                }
+            }
+
+            ModelDetail::where('idremission', $result->id)
+                ->whereNotIn('id', $ids)
+                ->delete();
+
+            DB::commit();
+            return $data;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        ModelDetail::whereNotIn('id', $ids)->delete();
-
-        return $data;
     }
 
     /**
@@ -97,6 +120,17 @@ class RemissionService
         }
 
         return null;
+    }
+
+    /**
+     * Verifica si una remision ya existe en la base de datos
+     *
+     * @param string $consecutive
+     * @return bool
+     */
+    public function exists(string $consecutive): bool
+    {
+        return Model::where('consecutive', $consecutive)->exists();
     }
 
     /**
@@ -223,7 +257,6 @@ class RemissionService
         $product->setName($model['product']['name']);
         $product->setDescription($model['product']['description']);
         $product->setPrice($model['product']['price']);
-        $product->setMinimunValue($model['product']['minimunvalue']);
         $product->setActive($model['product']['active']);
 
         $self = new RemissionDetail();
@@ -235,6 +268,7 @@ class RemissionService
         $self->setReference($model['reference']);
         $self->setColors($model['colors']);
         $self->setMinimum($model['minimum']);
+        $self->setReturn($model['return']);
         $self->setProduct($product);
 
         return $self;

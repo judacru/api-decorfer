@@ -28,6 +28,9 @@ class UserService
 
     private RoleService $roleService;
 
+    /**
+     * @param RoleService $roleService
+     */
     public function __construct(
         RoleService $roleService,
     ) {
@@ -229,9 +232,9 @@ class UserService
         if (!$this->exists(self::DEFAULT_USER)) {
             Model::create([
                 'id' => null,
-                'name' => env('NAME', ''),
-                'user' => env('NICK', ''),
-                'email' => env('EMAIL', ''),
+                'name' => config('app.name'),
+                'user' => config('app.nick'),
+                'email' => config('app.email'),
                 'password' => $password,
                 'idrole' => $role->getId(),
                 'active' => true,
